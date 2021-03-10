@@ -3,6 +3,7 @@ import { useState } from 'react'
 import '../styles/tasklist.scss'
 
 import { FiTrash, FiCheckSquare } from 'react-icons/fi'
+import { isCompositeComponent } from 'react-dom/test-utils';
 
 interface Task {
   id: number;
@@ -15,14 +16,51 @@ export function TaskList() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   function handleCreateNewTask() {
+
+    if(!newTaskTitle) return;
+
+    // ESTADO TEMPORÁRIO PARA CRIAÇÃO DA TASK
+    const newTask = {
+      id: Math.random(),
+      title: newTaskTitle,
+      isComplete: false
+    }
+    
+    // oldState são os dados antigos, com Sprad ele apenas adicionará nossa novatask
+    setTasks(oldState => [...oldState, newTask]);
+    setNewTaskTitle('')
+    
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
   }
 
-  function handleToggleTaskCompletion(id: number) {
+  function handleToggleTaskCompletion(id: number){
+    // FAÇO UM MAP PASSANDO POR TODAS AS TASKS
+    //VERIFICO SE O ID DA TASK É IGUAL AO ID PASSADO,
+    // SE FOR, EU FAÇO UM SPRED QUE PEGA TODOS OS VALORES ANTIGO DA TASK
+    //ALTERO SOMENTE A PROPRIEDADE DESEJADA NEGANDO ELA MESMA, OU SEJA SE ELA FOR TRUE VAI PRA FALSE
+    //CASO NÃO SEJA IGUAL AO ID EU PASSO ELA DA FORMA ORIGINAL
+    const filterComplete = tasks.map(task => task.id == id ? {
+      ...task,
+      isComplete: !task.isComplete
+    } : task )
+
+    setTasks(filterComplete)
+    
+    
+
+
+
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
   }
 
   function handleRemoveTask(id: number) {
+    // UMA VARIAVEL QUE IRÁ CONTER O RESULTADO DO FILTRO
+    //FILTRO TASKS COM O FILTER
+    //MONTA UM ARRAY COM TODOS OS ID DIFERENTE DO ID CLICADO
+    const filterTask = tasks.filter(task => task.id !== id)
+    
+    //EU RECRIO O ARRAY DE TASKS COM OS ID RETORNADOS
+    setTasks(filterTask)
     // Remova uma task da listagem pelo ID
   }
 
